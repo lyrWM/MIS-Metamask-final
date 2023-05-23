@@ -1,0 +1,47 @@
+# ----------------------------------------
+# CORE PROPERTIES
+# ----------------------------------------
+
+# IDENTITY
+spring.application.name: metamask
+
+# SPRING - MVC
+spring.mvc.favicon.enabled: true
+
+# DEVTOOL
+spring.devtools.livereload.enabled: true
+
+# ----------------------------------------
+# WEB PROPERTIES
+# ----------------------------------------
+
+# EMBEDDED SERVER
+server.port: 8080
+
+# ----------------------------------------
+# WINTER PROPERTIES
+# ----------------------------------------
+
+# Default (WinterBaseProperties)
+winter:
+  ping-message: Hello! (application, main)
+  base-domain: wemade.com
+  base-title: WEMADE-METAMASK
+
+# Filter (WinterFilterProperties)
+winter.filter:
+  xss.enabled: true
+  mdc.enabled: true
+  xua.enabled: true
+  url.enabled: true
+
+
+# Spring Multipart
+spring.servlet.multipart:
+  enabled: true
+  max-file-size: 200MB
+  max-request-size: 200MB
+
+# ActiveDirectory (OpenLdapProperties)
+winter.ad:
+  enabled: true

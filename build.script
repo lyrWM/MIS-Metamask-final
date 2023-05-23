@@ -1,0 +1,44 @@
+# Reference
+# https://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html#deployment-script-customization-when-it-runs
+
+# The "mode" of operation.
+MODE="service"
+
+# The root name of the pid folder (/var/run by default).
+PID_FOLDER="$(dirname "$jarfile")"
+
+if [ ! -d "$PID_FOLDER" ]; then
+  mkdir -p $PID_FOLDER
+fi
+
+# The name of the folder in which to put log files (/var/log by default).
+LOG_FOLDER="$(dirname "$jarfile")/logs"
+
+if [ ! -d "$LOG_FOLDER" ]; then
+  mkdir -p $LOG_FOLDER
+fi
+
+# The name of the log file in the LOG_FOLDER (<appname>.log by default).
+LOG_FILENAME="catalina.out"
+
+# The name of the app.
+APP_NAME="$(basename "${jarfile%.*}")"
+
+# The name of the app folder.
+APP_FOLDER="$(dirname "$jarfile")"
+
+# Set log date information.
+LOG_DATETIME=`date +%Y%m%d%H%M%S`
+
+# Options that are passed to the JVM when it is launched.
+# The @PROFILE@ variable is automatically replaced by Gradle.
+JAVA_OPTS="$JAVA_OPTS \
+ -Xms1024m -Xmx1024m \
+ -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${LOG_FOLDER}/heapdump_${LOG_DATETIME}.hprof \
+ -Dspring.output.ansi.enabled=always \
+ -Djava.security.egd=file:/dev/./urandom \
+ -Dfile.encoding=UTF-8 \
+ -Dspring.profiles.active=@PROFILES@"
+
+# The time in seconds to wait when stopping the application before forcing a shutdown (60 by default).
+STOP_WAIT_TIME=30

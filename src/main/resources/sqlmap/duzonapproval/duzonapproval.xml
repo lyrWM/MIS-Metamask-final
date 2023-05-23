@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wemade.metamask.application.duzonapproval.dao.DuzonApprovalMapper">
+
+	<select id="selectDuzonApprovalTypeByGwCompanyCd" resultType="DuzonApprovalTypeDB">
+		SELECT
+			/* duzon.approval.selectDuzonApprovalTypeByGwCompanyCd */
+			a.duzon_approval_type_seq
+		  , a.group_type
+		  , a.group_sub_type
+		  , a.out_process_code
+		  , a.form_id
+		  , a.sort
+		  , a.contents_enc
+		  , a.contents_type
+		  , a.upload_file_del_yn
+		  , a.approval_name
+		  , a.note
+		FROM
+			duzon_approval_type a,
+		    duzon_approval_gwcompany b
+		WHERE
+			a.duzon_approval_type_seq = b.duzon_approval_type_seq
+		AND a.out_process_code = #{outProcessCode}
+		AND b.gw_company_cd = #{gwCompanyCd}
+	</select>
+
+
+    <select id="selectApprovalInvoiceReadyList" resultType="ApprovalCommon">
+        SELECT
+            /* invoice.approval.selectApprovalInvoiceReadyList */
+            DISTINCT
+            d.duzon_approval_master_seq as approvalSeq,
+            d.gw_company_cd,
+            d.user_id,
+            d.emp_seq,
+            d.user_nm,
+            d.appro_key,
+            t.group_type AS approvalGroupType,
+            t.group_sub_type AS approvalGroupSubType,
+            d.out_process_code,
+            t.approval_name,
+            d.form_id,
+            d.doc_id,
+            d.doc_no,
+            d.doc_sts,
+            d.doc_sts_name,
+            d.doc_title,
+            d.reg_date,
+            d.reg_id,
+            d.db_status
+        FROM
+            duzon_approval_master AS d, duzon_approval_type as t
+        WHERE t.out_process_code = d.out_process_code
+        AND t.form_id = d.form_id
+        AND d.db_status = 'OK'
+        AND d.doc_sts = '90'
+        AND d.gw_company_cd =#{param.gwCompanyCd}
+        <if test="@com.wemade.infrastructure.persistence.MapperUtils@isNotEmpty(param.docTitle)">
+        AND d.doc_title LIKE CONCAT('%', #{param.docTitle}, '%')
+        </if>
+        <if test="@com.wemade.infrastructure.persistence.MapperUtils@isNotEmpty(param.docNo)">
+        AND d.doc_no LIKE CONCAT('%', #{param.docNo}, '%')
+        </if>
+        <if test="@com.wemade.infrastructure.persistence.MapperUtils@isNotEmpty(param.empSeq)">
+        AND (d.emp_seq = #{param.empSeq} OR EXISTS (SELECT 1 FROM approval_expense_mandate WHERE appro_key = d.appro_key AND mandate_emp_seq = #{param.empSeq}))
+        </if>
+        <if test="@com.wemade.infrastructure.persistence.MapperUtils@isNotEmpty(param.outProcessCode)">
+        AND d.out_process_code = #{param.outProcessCode}
+        </if>
+        <if test="@com.wemade.infrastructure.persistence.MapperUtils@isNotEmpty(param.approvalTypeDBList)">
+        AND d.out_process_code IN
+            <foreach collection="param.approvalTypeDBList" item="approvalType" index="index" open="(" close=")" separator=",">
+            #{approvalType.outProcessCode}
+            </foreach>
+        </if>
+        AND d.reg_date BETWEEN #{param.startDate} AND #{param.endDate}
+        AND (d.doc_id IS NOT NULL IS NOT NULL AND d.doc_id &lt;&gt; '')
+--         AND d.doc_id NOT IN (SELECT doc_id FROM BLOCKCHAIN.meta_transfer)
+    </select>
+
+
+    <select id ="selectCrptoCommonList" resultType="CryptoCommon">
+        SELECT m.doc_id,
+               m.form_id,
+               m.appro_key,
+               t.from_wallet_address,
+               t.to_wallet_address,
+               t.currency_code,
+               t.supply_amount,
+               t.reg_id,
+               t.db_status
+        FROM duzon_approval_master AS m,
+             approval_crypto_header AS h,
+             approval_crypto_task AS t
+        WHERE m.appro_key = h.appro_key
+          AND h.approval_crypto_header_seq = t.approval_crypto_header_seq
+          AND m.appro_key = #{approKey}
+          AND m.doc_id = #{docId}
+    </select>
+
+</mapper>

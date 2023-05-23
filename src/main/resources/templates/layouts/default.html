@@ -1,0 +1,23 @@
+<!doctype html>
+
+<html lang="kr">
+<head>
+	<meta charset="utf-8">
+	<title>{{ BASE_TITLE }}</title>
+	{% include "layouts/inc/commonCss" %}
+	{% include "layouts/inc/commonHead" %}
+	{% block head %}{% endblock %}
+</head>
+<body>
+	<div id="container">
+		{% include "layouts/nav/header" %}
+		{# 컨텐츠 #}
+		<div class="contents">
+			{% block content %}{% endblock %}
+		</div>
+	</div>
+	{% include "layouts/inc/commonJs" %}
+	{% block script %}{% endblock %}
+	{% block foot %}{% endblock %}
+</body>
+</html>

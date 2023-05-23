@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wemade.metamask.application.meta.dao.MetaMapper">
+
+    <insert id="insertTransferLog" parameterType="MetaParam">
+        INSERT INTO
+            /* meta.insertTransferLog */
+            BLOCKCHAIN.meta_transfer
+        (
+            form_id
+          , doc_id
+          , user_id
+          , result_time
+          , result_message
+          , amount
+          , amount_hex
+          , reg_date
+        ) VALUES (
+            #{param.formId}
+          , #{param.docId}
+          , #{param.regId}
+          , #{param.resultTime}
+          , #{param.receipt}
+          , #{param.amount}
+          , #{param.amountHex}
+          , now()
+        )
+    </insert>
+</mapper>

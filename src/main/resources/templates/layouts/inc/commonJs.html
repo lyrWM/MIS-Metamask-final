@@ -1,0 +1,12 @@
+<script src="/webjars/jquery/3.6.0/jquery.min.js?ts={{ STATIC_DATE_TIME }}"></script>
+<script src="/webjars/jquery-ui/1.13.0/jquery-ui.min.js?ts={{ STATIC_DATE_TIME }}"></script>
+<script src="/web-ui-script/js/wemade.web-ui-script.min.js?ts={{ STATIC_DATE_TIME }}"></script>
+
+<!--WEMADE JS-->
+{% if hasProfiles("production") %}
+<script src="/js/wemade.metamask.min.js?ts={{ STATIC_DATE_TIME }}"></script>
+{% else %}
+<script src="/js/wemade.metamask.common.js?ts={{ STATIC_DATE_TIME }}"></script>
+
+{% endif %}
+

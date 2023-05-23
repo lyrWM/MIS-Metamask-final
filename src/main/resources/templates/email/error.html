@@ -1,0 +1,33 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body>
+
+<table  style="padding:0;border-spacing:6px;width:95%; margin: 6px; border: 1px solid #dee2e6; font-size: 12px;">
+    <tbody>
+        <tr>
+            <td style="background-color:#4c9dfa;padding:10px;color:#f1f1f1;">
+                <b style="font-size: 12px;">{{ subject }}</b>
+            </td>
+        </tr>
+    <tr>
+        <td style="padding:10px;">
+			<span style="font-size: 12px; color:#4a4a4a">
+
+				{% autoescape false %}
+				{{ contents }}<br>
+				{% endautoescape %}
+
+				{% if (PROFILES | stringcontains("develop")) == true %}
+				<p>※ 본 메일은 테스트 장비에서 발송하는 메일입니다. </p>
+				{% endif %}
+			</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

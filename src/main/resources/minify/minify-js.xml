@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <comment>minify js configuration</comment>
+
+    <module key="FinanceMinJs" dest="src/main/resources/static/js/wemade.metamask.min.js">
+        <property source="src/main/resources/static/js/wemade.metamask.common.js" />
+        <property source="src/main/resources/static/js/wemade.metamask.contract.js" />
+    </module>
+</configuration>
+
+

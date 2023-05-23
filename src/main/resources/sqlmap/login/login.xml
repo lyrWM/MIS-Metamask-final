@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wemade.metamask.application.login.dao.LoginMapper">
+
+    <select id="selectAdUseYn" resultType="com.wemade.infrastructure.constants.YN">
+        SELECT
+            /* login.selectAdUseYn */
+            ad_use
+        FROM
+            company_info
+        WHERE
+            gw_company_cd =  #{gwCompanyCd}
+    </select>
+
+    <select id="selectMyCompanyList" resultType="Company">
+		SELECT /* login.selectMyCompanyList */
+			a.gw_company_cd
+		  , a.company_name
+		FROM
+		    IFDB.employee_info a
+		  , IFDB.company_info b
+		WHERE
+		    a.gw_company_cd =  b.gw_company_cd
+		AND a.emp_seq = #{empSeq}
+		AND a.use_yn = 'Y'
+		AND a.main_dept_yn = 'Y'
+-- 		AND b.erp_use = 'Y'
+-- 		AND b.use_yn = 'Y'
+		GROUP BY
+		    a.gw_company_cd
+		  , a.company_name
+		  , b.order_num
+        ORDER BY
+            b.order_num
+	</select>
+
+
+</mapper>

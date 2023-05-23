@@ -1,0 +1,12 @@
+{% extends "layouts/signin" %}
+
+{% block foot %}
+<script type="text/javascript">
+    $(function() {
+        alert("{{ errorMsg }}");
+        document.location.href = "/";
+    });
+</script>
+{% endblock %}
+{% block content %}
+{% endblock %}

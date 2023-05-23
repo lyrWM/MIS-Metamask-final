@@ -1,0 +1,173 @@
+{% extends "layouts/default" %}
+
+{% block foot %}
+<script type="text/javascript">
+
+    $(function () {
+        MetaMain.start();
+    });
+
+    $(function () {
+        CryptoInfo.cryptoInfo();
+    })
+
+    $(function(){
+        TransferInfo.transferInfo();
+    })
+
+</script>
+{% endblock %}
+{% block content %}
+<section>
+    <!-- 검색 조건 -->
+    <div class="condition_area">
+        <form name="searchForm" method="post" action="{{ REQUEST_PATH }}" autocomplete="off">
+            <div class="condition_box">
+                <span class="condition_tit">품의유형</span>
+                <select id="outProcessCode" name="outProcessCode">
+                    <option value="">전체</option>
+                    {% for approvalTypeDB in approvalTypeDBList %}
+                    <option value="{{ approvalTypeDB.outProcessCode }}" {% if search.outProcessCode==
+                            approvalTypeDB.outProcessCode %} selected {% endif %}> {{ approvalTypeDB.approvalName }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="condition_box">
+                <span class="condition_tit">기안기간</span>
+                <input type="text" id="startDate" name="startDate" value="{{ search.startDate }}" data-required="true"
+                       data-name="작성시작일" maxlength="20" readonly style="width:160px;">
+                ~
+                <input type="text" id="endDate" name="endDate" value="{{ search.endDate }}" data-required="true"
+                       data-name="작성종료일" maxlength="20" readonly style="width:160px;">
+            </div>
+
+            <div class="condition_box">
+                <span class="condition_tit">검색조건</span>
+                <select id="searchType" name="searchType">
+                    <option value="DOC_TITLE" {% if search.searchType=='DOC_TITLE' %}selected{% endif %}>제목</option>
+                    <option value="DOC_NO" {% if search.searchType=='DOC_NO' %}selected{% endif %}>품의번호</option>
+                </select>
+                <div class="inputarea" style="width:300px;">
+                    <input type="text" id="searchText" name="searchText" value="{{ search.searchText }}"
+                           autocomplete="off">
+                    <button class="btn_clear"></button>
+                </div>
+            </div>
+            <button type="button" class="btn_ok" data-progress="search">검색</button>
+        </form>
+    </div>
+    <div class="tit-wrap">
+        <h2>품의 목록</h2>
+    </div>
+    <div class="table-box-wrap" >
+        <div class="table-box" >
+            <table>
+                <colgroup>
+                    <col width="15%">
+                    <col width="15%">
+                    <col width="auto">
+                    <col width="10%">
+                    <col width="10%">
+                    <col width="10%">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th style="width:15%;">품의유형</th>
+                    <th style="width:15%;">품의번호</th>
+                    <th style="width:auto;">제목</th>
+                    <th style="width:10%;">기안자</th>
+                    <th style="width:10%;">기안일</th>
+                    <th style="width:10%;">비고</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in approvalList %}
+                <tr data-appro-key="{{ item.approKey }}" data-out-process-code="{{ item.outProcessCode }}"
+                    data-form-id="{{ item.formId }}" data-approval-seq="{{ item.approvalSeq }}"
+                    data-doc-title="{{ item.docTitle }}" data-doc-no="{{ item.docNo }}"
+                    data-doc-id="{{ item.docId }}" data-appro-key="{{ item.approKey }}">
+                    <td>{{ item.approvalName }}</td>
+                    <td>{{ item.docNo }}</td>
+                    <td class="t-left">{{ item.docTitle }}</td>
+                    <td>{{ item.userNm }}</td>
+                    <td>{{ item.regDate | date('yyyy-MM-dd') }}</td>
+                    <td>
+                        <button type="button" class="btn_select" data-progress="cryptoInfo" >선택</button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">검색 결과가 없습니다.</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="tit-wrap">
+        <h2>전송 목록</h2>
+    </div>
+    <div class="table-box-wrap" id="transferInfoBox" >
+        <div class="table-box">
+            <table>
+                <colgroup>
+                    <col width="10%">
+                    <col width="30%">
+                    <col width="30%">
+                    <col width="10%">
+                    <col width="10%">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th style="width:10%;">단계</th>
+                    <th style="width:30%;">From</th>
+                    <th style="width:30%;">To</th>
+                    <th style="width:10%;">토큰명</th>
+                    <th style="width:10%;">수량</th>
+                </tr>
+                </thead>
+                <tbody id = transferInfo>
+                {% for transferList in cryptoList %}
+                <tr>
+                    <td>{{ loop.index +1}}</td>
+                    <td>{{ transferList.from_wallet_address }}</td>
+                    <td>{{ transferList.to_wallet_address }}</td>
+                    <td>{{ transferList.currency_code }}</td>
+                    <td>{{ transferList.supply_amount }}</td>
+                    <td style="display: none">{{transferList.doc_id}}</td>
+                    <td style="display: none">{{transferList.form_id}}</td>
+                    <td style="display: none">{{transferList.appro_key}}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">전송 목록이 없습니다.</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn_select" style="width:25%; margin:auto; display:block;"
+                data-progress="sendStart" id = "metaCheck">전송 시작
+        </button>
+    </div>
+
+</section>
+
+
+<form name="cryptoInfoForm" method="post" action="{{ REQUEST_PATH }}" autocomplete="off">
+    <input type="hidden" name="docId" value="">
+    <input type="hidden" name="formId" value="">
+    <input type="hidden" name="approKey" value="">
+</form>
+
+<form name="transferInfoForm" method="post" action="/meta/transfer" autocomplete="off" target="transferInfo" onsubmit="window.open('/meta/transfer','transferInfo',
+'width='+parseInt(window.innerWidth)*0.5+',height='+parseInt(window.innerWidth)*0.57+',left='+parseInt(window.innerWidth)*0.3+',top=0,resizeable,scrollbars')">
+    <input type="hidden" name="account_address" value="">
+</form>
+
+
+{% endblock %}

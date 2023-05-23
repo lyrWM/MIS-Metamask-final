@@ -1,0 +1,59 @@
+# ----------------------------------------
+# CORE PROPERTIES
+# ----------------------------------------
+
+# LOGGING
+logging.config: classpath:logback/logback-production.xml
+
+# ----------------------------------------
+# WINTER PROPERTIES
+# ----------------------------------------
+
+# Default (WinterBaseProperties)
+winter:
+  ping-message: Hello! (application, production)
+
+# Notification - Email, (EmailSendProperties)
+winter.noti:
+  mail:
+    enabled: true
+    host: smtp-relay.gmail.com
+    account:
+      username: dkdd8aNPb+MFac8Vm7dq/UjHG3WiZfZelWRC6ucLixo=
+      password: /5+WhKqX0lQgwR7AjgcFFg==
+  hangoutschat:
+    enabled: false
+
+# DataSource (WinterMyBatisProperties)
+winter.datasource:
+  finance-mybatis:
+    name: FINANCE-MYBATIS
+    jdbc-url: jdbc:mysql://172.20.1.64:3306/FINANCE?allowPublicKeyRetrieval=true&allowMultiQueries=true&useSSL=false&serverTimezone=Asia/Seoul
+    connection-test-query: SELECT 1
+    username: 4iB5lo1FHpSgqGNWXE21uQ==
+    password: Tex/knZ4VqjEMlvPLAk+EQ==
+    minimum-idle: 5
+    maximum-pool-size: 5
+
+  ifdb-mybatis:
+    name: IFDB-MYBATIS
+    jdbc-url: jdbc:mysql://172.20.1.64:3306/IFDB?allowPublicKeyRetrieval=true&allowMultiQueries=true&useSSL=false&serverTimezone=Asia/Seoul
+    connection-test-query: SELECT 1
+    username: 4iB5lo1FHpSgqGNWXE21uQ==
+    password: Tex/knZ4VqjEMlvPLAk+EQ==
+    minimum-idle: 5
+    maximum-pool-size: 5
+
+  blockchain-mybatis:
+    name: BLOCKCHAIN-MYBATIS
+    jdbc-url: jdbc:mysql://172.20.1.64:3306/BLOCKCHAIN?allowPublicKeyRetrieval=true&allowMultiQueries=true&useSSL=false&serverTimezone=Asia/Seoul
+    connection-test-query: SELECT 1
+    username: 4iB5lo1FHpSgqGNWXE21uQ==
+    password: Tex/knZ4VqjEMlvPLAk+EQ==
+    minimum-idle: 5
+    maximum-pool-size: 5
+
+
+winter.storage:
+    data-path: /wemade/finance/upload
+    temp-path: /wemade/finance/temp

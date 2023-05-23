@@ -1,0 +1,30 @@
+{% extends "layouts/signin" %}
+
+{% block foot %}
+<script type="text/javascript">
+    $(function() {
+        $("#passwd").keypress(function(e) {
+            e.which===13&&Login.logIn();
+        })
+    });
+</script>
+{% endblock %}
+{% block content %}
+<form name="loginForm" method="post" action="/login/submit" autocomplete="off">
+    <input type="hidden" name="rUrl" id="rUrl" value=""/>
+    <div id="loginwrap">
+        <div class="logincont">
+            <div class="logintit">WEMADE-METAMASK</div>
+            <div class="loginarea">
+                <input type="text" id="userId" name="userId" placeholder="아이디">
+            </div>
+            <div class="loginarea">
+                <input type="password" placeholder="비밀번호" id="passwd" name="passwd">
+            </div>
+            <div class="btnarea">
+                <button type="button" class="btn_login" onclick="Login.logIn();">로그인</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

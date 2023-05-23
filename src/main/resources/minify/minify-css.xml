@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <comment>minify css configuration</comment>
+
+    <module key="FinanceMinCss" dest="src/main/resources/static/css/wemade.metamask.min.css">
+        <property source="src/main/resources/static/css/wemade.metamask.css" />
+    </module>
+</configuration>
+
+

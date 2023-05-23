@@ -1,0 +1,601 @@
+plugins {
+    id "java-library"
+    id "maven-publish"
+    id "org.springframework.boot" version "${SPRINGBOOT_VERSION}"
+    id "io.spring.dependency-management" version "1.0.13.RELEASE"
+}
+
+wrapper {
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+exec {
+    executable "java"
+    args "-version"
+}
+
+repositories {
+    maven { url = "https://mis-nexus.wemade.com/repository/maven-public/" }
+}
+
+configurations {
+    all {
+        configurations {
+            exclude group: "commons-logging", module: "commons-logging"
+            exclude group: "log4j", module: "log4j"
+            exclude group: "org.slf4j", module: "slf4j-jcl"
+            exclude group: "org.slf4j", module: "slf4j-jdk14"
+            exclude group: "org.slf4j", module: "slf4j-log4j12"
+        }
+        resolutionStrategy {
+            failOnVersionConflict()
+            preferProjectModules()
+
+            cacheDynamicVersionsFor 0, "seconds"
+            cacheChangingModulesFor 0, "seconds"
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [ "src/main/java" ]
+        }
+        resources {
+            srcDirs = [ "src/main/resources" ]
+        }
+    }
+    test {
+        java {
+            srcDirs = [ "src/test/java" ]
+        }
+        resources {
+            srcDirs = [ "src/test/resources" ]
+        }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+        vendor = JvmVendorSpec.AZUL
+    }
+    compileJava {
+        options.encoding = "UTF-8"
+    }
+    compileTestJava {
+        options.encoding = "UTF-8"
+    }
+    //withJavadocJar() // with javadoc tasks
+    //withSourcesJar()
+}
+
+def WINTER_PLATFORM_VERSION = "2.1.1-RELEASE"
+
+dependencies {
+    implementation ("com.wemade.winter:winter-platform-web:${WINTER_PLATFORM_VERSION}")
+
+    implementation ("com.wemade.winter:winter-persistence-mybatis:${WINTER_PLATFORM_VERSION}")
+    //implementation ("com.wemade.winter:winter-persistence-hibernate:${WINTER_PLATFORM_VERSION}")
+    implementation ("com.wemade.winter:winter-plugins-certification:${WINTER_PLATFORM_VERSION}")
+    implementation ("com.wemade.winter:winter-plugins-notification:${WINTER_PLATFORM_VERSION}")
+    implementation ("com.wemade.winter:winter-plugins-import-export:${WINTER_PLATFORM_VERSION}")
+    implementation ("com.wemade.winter:winter-plugins-upload-download:${WINTER_PLATFORM_VERSION}")
+
+    runtimeOnly ("com.wemade:MIS_web_ui_script:1.1.6-RELEASE")
+
+    implementation ("io.jsonwebtoken:jjwt-api:0.11.5")
+    implementation ("io.jsonwebtoken:jjwt-impl:0.11.5")
+    implementation ("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+    implementation ("org.json:json:20220320")
+    implementation ('org.mariadb.jdbc:mariadb-java-client:3.0.6')
+
+    testImplementation("com.wemade.winter:winter-plugins-test:${WINTER_PLATFORM_VERSION}")
+}
+
+
+// ----------------------------------------
+// 아래 설정에서 필요 없는 항목은 삭제 가능하다.
+// ----------------------------------------
+
+// ----------------------------------------
+// TEST CONFIGURATIONS
+// ----------------------------------------
+test {
+    useJUnit()
+    testLogging {
+        events "started", "passed", "skipped", "failed", "standard_out", "standard_error"
+        exceptionFormat "full"
+        showCauses true
+        showExceptions true
+        showStackTraces true
+        showStandardStreams true
+
+        afterSuite { desc, result ->
+            if (!desc.parent) {
+                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+                def startItem = "|  ", endItem = "  |"
+                def repeatLength = startItem.length() + output.length() + endItem.length()
+                println("\n" + ("-" * repeatLength) + "\n" + startItem + output + endItem + "\n" + ("-" * repeatLength))
+            }
+        }
+    }
+}
+
+// ----------------------------------------
+// LOMBOK CONFIGURATIONS
+// ----------------------------------------
+configurations {
+    lombok
+}
+
+dependencies {
+    lombok("org.projectlombok:lombok:1.18.22")
+
+    compileOnly("org.projectlombok:lombok:1.18.22")
+    annotationProcessor("org.projectlombok:lombok:1.18.22")
+
+    testCompileOnly("org.projectlombok:lombok:1.18.22")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.22")
+}
+
+def DELOMBOKED_PATH = "${buildDir}/delomboked"
+
+task nDelombok(dependsOn: compileJava) {
+    def SRC_MAIN_JAVAS = sourceSets.main.java.srcDirs
+
+    inputs.files(SRC_MAIN_JAVAS)
+    outputs.dir(DELOMBOKED_PATH)
+
+    doLast {
+        ant.taskdef(name: "delombok", classname: "lombok.delombok.ant.Tasks\$Delombok", classpath: configurations.lombok.asPath)
+        SRC_MAIN_JAVAS.each { from ->
+            ant.delombok(from: from, to: DELOMBOKED_PATH, classpath: compileJava.classpath.asPath, encoding: "UTF-8", verbose: false)
+        }
+    }
+}
+
+// ----------------------------------------
+// JAVADOC CONFIGURATIONS
+// ----------------------------------------
+task nJavadoc(type: Javadoc, dependsOn: nDelombok) {
+    source = fileTree(dir: DELOMBOKED_PATH, includes: [ "**/*.java" ])
+    destinationDir = file("${buildDir}/docs/javadoc/${project.name}")
+
+    classpath = sourceSets.main.runtimeClasspath
+
+    options.encoding = "UTF-8"
+    options.addStringOption("Xdoclint:none", "-quiet")
+    options.addStringOption("locale","ko_KR");
+    options.addStringOption("charset","UTF-8");
+
+    failOnError = false
+}
+
+task nJavadocJar(type: Jar, dependsOn: nJavadoc) {
+    archiveClassifier.set("javadoc")
+    from javadoc.destinationDir
+}
+
+task nSourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set("sources")
+    from sourceSets.main.allJava
+}
+
+// build 의존성 추가시 아래를 활성화한다.
+artifacts {
+    archives nJavadocJar
+    archives nSourcesJar
+}
+
+// ----------------------------------------
+// JPA CONFIGURATIONS (hibernate 사용시 활성화)
+// ----------------------------------------
+/*def QUERYDSL_PATH = "${buildDir}/generated-querydsl"
+
+sourceSets {
+    main {
+        java {
+            srcDir QUERYDSL_PATH
+        }
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl {
+        extendsFrom compileClasspath
+    }
+}
+
+dependencies {
+    annotationProcessor("javax.persistence:javax.persistence-api:2.2")
+    annotationProcessor("javax.annotation:javax.annotation-api:1.3.2")
+}
+
+task nGenerateQueryDSL(type: JavaCompile) {
+    def targetDir = file(QUERYDSL_PATH)
+    def compiledDestinationDir = file("${buildDir}/tmp/generated-querydsl")
+
+    doFirst {
+        // 항상 대상 디렉토리를 비우고 시작할 것
+        if (targetDir.exists()) {
+            targetDir.deleteDir()
+        }
+
+        targetDir.mkdirs()
+    }
+
+    classpath = configurations.querydsl
+    source    = sourceSets.main.java
+    destinationDirectory.set(compiledDestinationDir)
+
+    options.compilerArgs = [
+            "-proc:only",
+            "-encoding", "UTF-8",
+            "-s", targetDir.absolutePath,
+            "-processor", "com.querydsl.apt.jpa.JPAAnnotationProcessor,lombok.launch.AnnotationProcessorHider\$AnnotationProcessor"
+    ]
+
+    options.annotationProcessorPath = configurations.querydsl
+    outputs.upToDateWhen { false }
+}
+
+compileJava {
+    dependsOn nGenerateQueryDSL
+}
+
+clean {
+    doLast {
+        delete file(QUERYDSL_PATH)
+    }
+}*/
+
+// ----------------------------------------
+// PUBLISHING CONFIGURATIONS
+// 사용하지 않을 경우 상단 plugins 에서 "maven-publish" 부분을 삭제한다.
+// 웹서비스 프로젝트에서는 절대 사용하지 않는다. 사용하는 경우 jar 패키징 방식이 달라져서 실행할 수 없다.
+// 프로젝트를 모듈로 패키징해서 업로드 할 경우 아래 jar.enabled 를 true 로 변경한다.
+// ----------------------------------------
+jar {
+    enabled = false
+    manifest {
+        attributes(
+                "Implementation-Title"   : project.name,
+                "Implementation-Version" : project.version,
+                "Built-By"               : System.getProperty("user.name"),
+                "Built-Date"             : new Date(),
+                "Built-JDK"              : System.getProperty("java.version"),
+                "Built-Gradle"           : gradle.gradleVersion
+        )
+    }
+}
+
+task nCheckNexus() {
+    doLast {
+        def projectGroup   = String.valueOf(project.group) ?: ""
+        def projectName    = project.name
+        def projectVersion = String.valueOf(project.version) ?: ""
+
+        if (!projectGroup) {
+            throw new IllegalArgumentException("project.group을 입력해주세요.\nPlease enter project.group in build.gradle file.")
+        }
+
+        if (!projectName) {
+            throw new IllegalArgumentException("project.name을 입력해주세요.\nPlease enter project.name in build.gradle file.")
+        }
+
+        if (!projectVersion || projectVersion == "unspecified") {
+            throw new IllegalArgumentException("project.version을 입력해주세요.\nPlease enter project.version in build.gradle file.")
+        }
+
+        if (!projectVersion.endsWith("-RELEASE") && !projectVersion.endsWith("-SNAPSHOT")) {
+            throw new IllegalArgumentException("project.version은 -RELEASE 또는 -SNAPSHOT 로 끝나야 합니다.\nproject.version must end with -RELEASE or -SNAPSHOT. : ${projectVersion}")
+        }
+
+        def nexusUrl      = project.findProperty("nexus.url") ?: ""
+        def nexusUsername = project.findProperty("nexus.username") ?: ""
+        def nexusPassword = project.findProperty("nexus.password") ?: ""
+
+        if (!nexusUrl) {
+            throw new IllegalArgumentException("gradle.properties 파일에 nexus.url을 입력해주세요.\nPlease write nexus.url in gradle.properties file.")
+        }
+
+        if (!nexusUsername) {
+            throw new IllegalArgumentException("gradle.properties 파일에 nexus.username을 입력해주세요.\nPlease write nexus.username in gradle.properties file.")
+        }
+
+        if (!nexusPassword) {
+            throw new IllegalArgumentException("Nexus 비밀번호를 입력해주세요.\nPlease enter your Nexus password. (-Pnexus.password= or gradle.properties)")
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId    = "${project.group}"
+            artifactId = "${project.name}"
+            version    = "${project.version}"
+
+            from components.java
+
+            artifact nSourcesJar
+            artifact nJavadocJar
+        }
+    }
+
+    repositories {
+        maven {
+            def nexusUrl      = project.findProperty("nexus.url") ?: ""
+            def nexusUsername = project.findProperty("nexus.username") ?: ""
+            def nexusPassword = project.findProperty("nexus.password") ?: ""
+
+            def releasesRepoUrl = "${nexusUrl}/content/repositories/releases/"
+            def snapshotRepoUrl = "${nexusUrl}/content/repositories/snapshots/"
+
+            url = version.endsWith("RELEASE") ? releasesRepoUrl : snapshotRepoUrl
+            allowInsecureProtocol = true
+
+            credentials {
+                username = nexusUsername
+                password = nexusPassword
+            }
+        }
+    }
+}
+
+tasks.findAll {
+    if (it.name.matches("^publish\$")) {
+        it.dependsOn nCheckNexus
+        it.mustRunAfter nCheckNexus
+    }
+    else if (it.name.matches("^publish.+")) {
+        it.dependsOn nCheckNexus
+        it.mustRunAfter nCheckNexus
+    }
+}
+
+tasks.withType(AbstractPublishToMaven) {
+    doLast {
+        println "--> ${publication.groupId} : ${publication.artifactId}-${publication.version} (${publication.pom.packaging})"
+    }
+}
+
+// ----------------------------------------
+// MINIFY CONFIGURATIONS
+// XmlParser 클래스가 Cannot resolve symbol 오류가 보일텐데 무시해도 된다. (IDEA 에서 인식을 못하는것이다.)
+// ----------------------------------------
+configurations {
+    closureCompiler
+    compressCompiler
+}
+
+dependencies {
+    closureCompiler("com.google.javascript:closure-compiler:v20211201")
+    compressCompiler("com.yahoo.platform.yui:yuicompressor:2.4.8")
+}
+
+// Javascript
+def minifyJsTasks = []
+
+def getMinifyJsFilePath() {
+    return project.findProperty("minify.path.js") ?: "src/main/resources/minify/minify-js.xml"
+}
+
+def isMinifyJsEnabled() {
+    return file(getMinifyJsFilePath()).exists()
+}
+
+def getMinifyJsConfig() {
+    if (!isMinifyJsEnabled()) {
+        return null
+    }
+
+    return new XmlParser().parse(file(getMinifyJsFilePath()))
+}
+
+task nTaskBuildMinifyJs() {
+    def config = getMinifyJsConfig()
+    if (config == null || config.module.size() < 1) {
+        return
+    }
+
+    config.module.each { item ->
+        def itemKey          = item.@key
+        def itemDest         = item.@dest
+        def itemDestCombined = itemDest + ".combined"
+        def itemSources      = item.property.@source
+
+        def taskNameCombine  = "minifyJs${itemKey}Combine"
+        def taskNameMinify   = "minifyJs${itemKey}"
+
+        if (!itemSources) {
+            return
+        }
+
+        // add task
+        minifyJsTasks.push(taskNameMinify)
+
+        // create task
+        tasks.create(name : taskNameCombine, type: SourceTask) {
+            source = files(itemSources)
+
+            doLast {
+                ant.concat(destfile: file(itemDestCombined), fixlastline: "yes", encoding: "UTF-8", outputencoding: "UTF-8") {
+                    source.files.each {
+                        fileset(file: it)
+                    }
+                }
+            }
+        }
+
+        tasks.create(name : taskNameMinify, type: JavaExec, dependsOn: taskNameCombine) {
+            classpath configurations.closureCompiler
+            mainClass.set("com.google.javascript.jscomp.CommandLineRunner")
+
+            def closureArgs = []
+            closureArgs << "--compilation_level=SIMPLE"
+            closureArgs << "--warning_level=QUIET"
+            closureArgs << "--js_output_file=${itemDest}"
+            closureArgs << "--charset=UTF-8"
+            closureArgs << itemDestCombined
+
+            args closureArgs
+
+            doLast {
+                delete itemDestCombined
+            }
+        }
+    }
+}
+
+// Stylesheet
+def minifyCssTasks = []
+
+def getMinifyCssFilePath() {
+    return project.findProperty("minify.path.css") ?: "src/main/resources/minify/minify-css.xml"
+}
+
+def isMinifyCssEnabled() {
+    return file(getMinifyCssFilePath()).exists()
+}
+
+def getMinifyCssConfig() {
+    if (!isMinifyCssEnabled()) {
+        return null
+    }
+
+    return new XmlParser().parse(file(getMinifyCssFilePath()))
+}
+
+task nTaskBuildMinifyCss() {
+    def config = getMinifyCssConfig()
+    if (config == null || config.module.size() < 1) {
+        return
+    }
+
+    config.module.each { item ->
+        def itemKey          = item.@key
+        def itemDest         = item.@dest
+        def itemDestCombined = itemDest + ".combined"
+        def itemSources      = item.property.@source
+
+        def taskNameCombine  = "minifyCss${itemKey}Combine"
+        def taskNameMinify   = "minifyCss${itemKey}"
+
+        // add task
+        minifyCssTasks.push(taskNameMinify)
+
+        // create task
+        tasks.create(name : taskNameCombine, type: SourceTask) {
+            source = files(itemSources)
+
+            doLast {
+                ant.concat(destfile: file(itemDestCombined), fixlastline: "yes", encoding: "UTF-8", outputencoding: "UTF-8") {
+                    source.files.each {
+                        fileset(file: it)
+                    }
+                }
+            }
+        }
+
+        tasks.create(name : taskNameMinify, type: JavaExec, dependsOn: taskNameCombine) {
+            classpath = configurations.compressCompiler
+            mainClass.set("com.yahoo.platform.yui.compressor.Bootstrap")
+
+            def compressArgs = []
+            compressArgs << "-v"
+            compressArgs << "--type" << "css"
+            compressArgs << "--charset" << "UTF-8"
+            compressArgs << "--line-break" << "-1"
+            compressArgs << "-o" << "${itemDest}"
+            compressArgs << itemDestCombined
+
+            args compressArgs
+
+            doLast {
+                delete itemDestCombined
+            }
+        }
+    }
+}
+
+task nMinifyJs() {
+    dependsOn minifyJsTasks
+}
+
+task nMinifyCss() {
+    dependsOn minifyCssTasks
+}
+
+task nMinifyAll() {
+    dependsOn nMinifyJs, nMinifyCss
+}
+
+// ----------------------------------------
+// BOOTJAR CONFIGURATIONS
+// build tasks 와 함께 사용될 수 없다.
+// build.script 파일이 필요하다. 아래 위키 참고할것.
+// ----------------------------------------
+task nInitBootJar() {
+    doLast {
+        def profiles = project.findProperty("profiles") ?: ""
+
+        // 시스템 변수 확인
+        if (!profiles) {
+            throw new IllegalArgumentException("Gradle Arguments를 설정해주세요. : -Pprofiles=[local|develop|integration|staging|production]\nPlease set Gradle Arguments. : -Pprofiles=[local|develop|integration|staging|production]")
+        }
+
+        // build.script 파일 확인
+        if (!file("build.script").exists()) {
+            throw new IllegalArgumentException("build.script 파일이 없습니다.\nThe build.script file is missing.")
+        }
+
+        copy {
+            from "build.script"
+            into "${buildDir}"
+
+            filteringCharset = "UTF-8"
+            filter { line -> line.replaceAll("@PROFILES@", profiles) }
+        }
+    }
+}
+
+bootJar {
+    classpath configurations.developmentOnly
+
+    def buildScriptFile = file("build.script")
+    if (buildScriptFile.exists()) {
+        dependsOn nInitBootJar
+        mustRunAfter nInitBootJar
+
+        launchScript {
+            properties "inlinedConfScript" : "${buildDir}/build.script"
+        }
+    }
+}
+
+// ----------------------------------------
+// ETC CONFIGURATIONS
+// ----------------------------------------
+
+task nBuildDate() {
+    dependsOn processResources
+    mustRunAfter processResources
+
+    def filePath = project.findProperty("build.file.path") ?: "${buildDir}/resources/main"
+    def fileName = project.findProperty("build.file.name") ?: "build.txt"
+    def dateTime = new Date().format("yyyy-MM-dd HH:mm:ss (z)", TimeZone.getTimeZone("Asia/Seoul"))
+
+    doLast {
+        def versionFile = new File("${filePath}/${fileName}")
+        versionFile.withWriter {
+            it.write(dateTime)
+        }
+    }
+}

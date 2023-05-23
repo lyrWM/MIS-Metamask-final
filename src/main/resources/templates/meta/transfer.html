@@ -1,0 +1,75 @@
+{% extends "layouts/default" %}
+
+{% block foot %}
+
+<script type="text/javascript">
+    $(function () {
+    });
+    var transferItem = [];
+    {%
+        for item in transferList %}
+            transferItem.push({
+                from_wallet_address: "{{item.from_wallet_address}}",
+                to_wallet_address: "{{item.to_wallet_address}}",
+                supply_amount: {{item.supply_amount}}
+            })
+    {% endfor %}
+
+</script>
+
+<script src="/js/ext/metamask-onboarding.bundle.js?ts={{ STATIC_DATE_TIME }}" xmlns:th="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.w3.org/1999/xhtml"></script>
+<script src="/js/wemade.metamask.contract.js?ts={{ STATIC_DATE_TIME }}"></script>
+
+
+{% endblock %}
+{% block content %}
+<section>
+
+    <input type="hidden" id="docId" value={{transferList[0].doc_id}}>
+    <input type="hidden" id="formId" value={{transferList[0].form_id}}>
+
+    <div class="transfer-wrap">
+        <div class="transfer-box">
+            <h1>Meta Account</h1>
+            <div class="t-line"></div>
+            <div class="t-box t-disable">
+                <span class="placeholder-tit">eth_accounts</span>
+                <input type="text" id="getAccountsResult" class="t-input" disabled value={{metaAccount}}>
+            </div>
+        </div>
+        <div class="transfer-box">
+            <h1>Send Info + </h1>
+            <div class="t-line"></div>
+            <div class="t-box t-disable">
+                <span class="placeholder-tit">from</span>
+                <input type="text" id="fromInput" class="t-input" value="" readonly>
+            </div>
+            <div class="t-box">
+                <span class="placeholder-tit">To</span>
+                <input type="text" id="toInput" class="t-input" value="">
+            </div>
+            <div class="t-box">
+                <span class="placeholder-tit">Amount</span>
+                <input type="text" id="amountInput" class="t-input35" value="">
+                <input type="text" id="amount" class="t-input60" readonly>
+            </div>
+            <div class="t-box">
+                <span class="placeholder-tit">Max Priority Fee</span>
+                <input type="text" id="maxPriorityFee" class="t-input35" value="100" readonly>
+                <input type="text" id="maxPriorityFeeInput" class="t-input60" readonly>
+            </div>
+            <div class="t-box">
+                <span class="placeholder-tit">Max Fee</span>
+                <input type="text" id="maxFee" class="t-input35" value="101" readonly>
+                <input type="text" id="maxFeeInput" class="t-input60" readonly>
+            </div>
+            <div class="t-box" style="display: none;">
+                <span class="placeholder-tit">Data</span>
+                <input type="text" id="dataInput" class="t-input">
+            </div>
+            <button class="btn_100" id="submitStart">SUBMIT</button>
+        </div>
+    </div>
+</section>
+{% endblock %}

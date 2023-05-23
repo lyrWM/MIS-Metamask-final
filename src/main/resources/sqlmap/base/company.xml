@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wemade.metamask.application.base.dao.CompanyMapper">
+
+	<select id="list" resultType="Company">
+		SELECT
+			/* base.company.list */
+			group_seq,
+			gw_company_cd,
+			erp_company_cd,
+            gw_domain,
+            company_name,
+            company_short_name,
+            erp_use,
+            use_yn,
+            order_num,
+            reg_date
+		FROM
+			company_info
+		WHERE
+		    use_yn = 'Y'
+		ORDER BY
+			order_num
+	</select>
+
+</mapper>

@@ -1,0 +1,17 @@
+<header class="Header">
+    <div class="logo" onclick="document.location.href='/';" style="cursor: pointer">WEMADE</div>
+    <div class="leftbox">
+        <div class="info">안녕하세요! {{ LOGIN_USER.userNm }}님 ( {{ LOGIN_USER.orgNm }} )</div>
+        <div class="corp_slect">
+            <select class="corpselect" name="myCompanyList" onchange="Login.changeCompany(this);">
+                {% for company in MY_COMPANY_LIST %}
+                    <option value="{{ company.gwCompanyCd }}" {% if LOGIN_USER.gwCompanyCd == company.gwCompanyCd %}selected{% endif %}>{{ company.companyName }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="btn_logout" onclick="Login.logOut();">로그아웃</button>
+    </div>
+</header>
+<form name="loginForm" method="post" action="/login/submit" autocomplete="off">
+    <input type="hidden" name="gwCompanyCd" id="gwCompanyCd" value="">
+</form>

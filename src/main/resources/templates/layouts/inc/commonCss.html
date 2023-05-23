@@ -1,0 +1,13 @@
+<link href="/webjars/jquery-ui/1.13.0/jquery-ui.min.css?ts={{ STATIC_DATE_TIME }}" rel="stylesheet" />
+<link href="/webjars/jquery-ui/1.13.0/jquery-ui.structure.min.css?ts={{ STATIC_DATE_TIME }}" rel="stylesheet" />
+<link href="/webjars/jquery-ui/1.13.0/jquery-ui.theme.min.css?ts={{ STATIC_DATE_TIME }}" rel="stylesheet" />
+
+<link href="/web-ui-script/css/wemade.web-ui-script.min.css?ts={{ STATIC_DATE_TIME }}" rel="stylesheet" />
+
+<!--WEMADE CSS-->
+{% if hasProfiles("production") %}
+<link href="/css/wemade.metamask.min.css?ts={{ STATIC_DATE_TIME }}" rel="stylesheet" />
+{% else %}
+<link href="/css/wemade.metamask.css?ts={{ STATIC_DATE_TIME }}" rel="stylesheet" />
+{% endif %}
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />

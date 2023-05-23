@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wemade.metamask.application.base.dao.EmployeeMapper">
+
+	<select id="select" resultType="EmployeeInfo">
+		SELECT
+			/* base.employee.select */
+			emp_seq,
+			emp_no,
+			emp_name,
+			login_id,
+			e_mail,
+			out_mail,
+			group_seq,
+			biz_seq,
+			biz_name,
+			gw_company_cd,
+			erp_company_cd,
+			company_name,
+			dept_seq,
+			dept_cd,
+			dept_name,
+			main_comp_yn,
+			main_dept_yn,
+			duty_code,
+			duty_name,
+			position_code,
+			position_name,
+			use_yn,
+			check_work_yn,
+			orgchart_display_yn,
+			messenger_display_yn
+		FROM
+			IFDB.employee_info
+		WHERE
+			emp_seq = #{empSeq}
+		  AND
+			gw_company_cd = #{gwCompanyCd}
+		  AND
+			main_dept_yn = 'Y'
+		  AND
+			use_yn = 'Y'
+	</select>
+
+	<select id="selectList" resultType="EmployeeInfo">
+		SELECT
+			/* base.employee.select */
+			emp_seq,
+			emp_no,
+			emp_name,
+			login_id,
+			e_mail,
+			out_mail,
+			group_seq,
+			biz_seq,
+			biz_name,
+			gw_company_cd,
+			erp_company_cd,
+			company_name,
+			dept_seq,
+			dept_cd,
+			dept_name,
+			main_comp_yn,
+			main_dept_yn,
+			duty_code,
+			duty_name,
+			position_code,
+			position_name,
+			use_yn,
+			check_work_yn,
+			orgchart_display_yn,
+			messenger_display_yn
+		FROM
+			IFDB.employee_info
+		WHERE
+			emp_seq = #{empSeq}
+		  AND
+			gw_company_cd = #{gwCompanyCd}
+		  AND
+			use_yn = 'Y'
+	</select>
+
+	<select id="selectByLoginId" resultType="EmployeeInfo">
+		SELECT
+			/* base.employee.selectByLoginId */
+			emp_seq,
+			emp_no,
+			emp_name,
+			login_id AS user_id,
+			login_id,
+			e_mail,
+			out_mail,
+			group_seq,
+			biz_seq,
+			biz_name,
+			gw_company_cd,
+			erp_company_cd,
+			company_name,
+			dept_seq,
+			dept_cd,
+			dept_name,
+			main_comp_yn,
+			main_dept_yn,
+			duty_code,
+			duty_name,
+			position_code,
+			position_name,
+			use_yn,
+			check_work_yn,
+			orgchart_display_yn,
+			messenger_display_yn
+		FROM
+			IFDB.employee_info
+		WHERE
+			login_id = #{loginId}
+		<if test="@com.wemade.infrastructure.persistence.MapperUtils@isNotEmpty(gwCompanyCd)">
+			AND gw_company_cd = #{gwCompanyCd}
+		</if>
+		<if test="@com.wemade.infrastructure.persistence.MapperUtils@isEmpty(gwCompanyCd)">
+			AND main_comp_yn = 'Y'
+		</if>
+		AND main_dept_yn = 'Y'
+		AND use_yn = 'Y'
+	</select>
+
+</mapper>

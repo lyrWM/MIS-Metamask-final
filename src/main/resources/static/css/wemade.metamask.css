@@ -1,0 +1,111 @@
+@charset "utf-8";
+@font-face {font-family:'Infinity Sans'; font-weight:normal;src:local("Infinity Sans Regular"),local("InfinitySans-Regular")}
+@font-face {font-family:'Infinity Sans'; font-weight:bold; src:local("Infinity Sans Bold"),local("InfinitySans-Bold")}
+@font-face {font-family:'Infinity Sans WM'; font-weight:normal; src:local("Infinity Sans WM Regular"),local("InfinitySansWM-Regular")}
+@font-face {font-family:'Infinity Sans WM'; font-weight:bold; src:local("Infinity Sans WM Bold"),local("InfinitySansWM-Bold")}
+@font-face {font-family:'Infinity Sans Cond'; font-style:normal; font-weight:bold; src:local("Infinity Sans Cond"),local("Infinity Sans Cond Bold"),local("InfinitySansCond-Bold")}
+
+/* CSS Document */
+html, body, div, span, ol, ul, li, dl, dt, dd, a, header, footer, input, h1, h2, i, button, table, tr, th, td, select {margin:0; padding:0; border:0; outline:0; vertical-align:middle; background:transparent; box-sizing:border-box; font-weight:normal; border-spacing:0; border-collapse:collapse;}
+body {background-color:#fff;}
+body, button, input, select, table, textarea, span {font-family:'Infinity Sans','Infinity Sans WM','Infinity Sans Cond','맑은 고딕','malgun gothic',"NanumGothic",'돋움', dotum,'굴림', gulim, helvetica, sans-serif; font-size:14px; font-weight:normal; letter-spacing:0; word-break:break-all;}
+header, footer {display:block;}
+ol, ul, li, dl, dd, dt {list-style:none}
+a {font-size:100%; vertical-align:middle; background:transparent; text-decoration:none; display:inline-block; cursor:pointer;}
+
+#container {width:100%;}
+
+/* header */
+header {width:100%; height:60px; background-color:#4499dd;}
+.Header {position:sticky; top:0; z-index:999; color:#fff;}
+.logo {float:left; padding:0 0 0 30px; font-size:2em; font-weight:600; font-family:'Infinity Sans Cond'; color:#fff; line-height:2em;}
+.leftbox {float:right; padding:12px 30px; height:60px; box-sizing:border-box;}
+.info {float:left; font-size:1em; font-weight:400; line-height:2.6em;}
+.corp_slect {float:left; width:200px; margin:0 10px; }
+
+/* contents */
+.contents {margin:30px; display:flex; flex-wrap:nowrap;}
+section {flex-grow:1; flex-shrink:1; margin:0;}
+.tit-wrap {margin:40px 0 0 0;}
+
+/* 폰트 */
+h1 {font-size:22px; font-weight:600; letter-spacing:-0.3px;}
+h2 {font-size:20px; font-weight:600;}
+
+/* button */
+button {cursor:pointer;}
+button:disabled {opacity:0.3;}
+.btn_login {width:100%; height:50px; border-radius:.3em; background-color:#4499dd; font-weight:600; font-size:20px; color:#fff; text-align:center; margin-top:10px;}
+.btn_logout {float:left; box-sizing:border-box; width:80px; height:35px; font-size:1em; font-weight:600; line-height:1.6em; border:1px solid #fff; border-radius:.2em; background-color:#fff; text-align:center;}
+.btn_ok {width:100px; height:40px; background-color:#4499dd; border-radius:.3em; font-size:1em; font-weight:600; line-height:1em; color:#fff;}
+.btn_clear {position:absolute; top:0; right:3px; width:30px; height:inherit; background:url(../images/ico/btn_clear.png) no-repeat center center; background-size:50%; border:none; outline:none;}
+.btn_select {width:60px; height:30px; border-radius:.3em; border:1px solid #ccc; background-color:#fff; font-weight:600; font-size:1em; color:#000; text-align:center;}
+.btn_select:hover {border:1px solid #4499dd; color:#4499dd;}
+.btn_100 {width:100%; height:50px; border-radius:.3em; background:#333; color:#fff; font-weight:600; font-size:16px; line-height:1em;}
+
+/* 조건 조회 */
+.condition_area {border:1px solid #E0E9F0; background-color:#F3F8FD; height:80px; padding:19px 30px 19px 10px; margin:10px 0; box-sizing:border-box;}
+.condition_box {display:inline-block; float:left; margin:0 20px;}
+.condition_tit {font-weight:600; padding-right:15px;}
+
+/* table */
+.table-box-wrap {position:relative; margin-top:20px; padding-top:40px; border:1px solid #E5E5E5; border-top:2px solid #000; background:#F4F6F9;}
+.table-box-wrap .table-box {max-height:580px; overflow-y:scroll; overflow-x:hidden;}
+.table-box-wrap .table-box table {width:100%; table-layout:fixed; border-spacing:0; border-collapse:collapse;}
+.table-box-wrap .table-box table thead tr {position:absolute; top:0; width:calc(100% - 17px);}
+.table-box-wrap .table-box table thead tr th {height:40px; border:1px solid #E5E5E5; border-width:0 0 1px 1px; font-weight:600; padding:0 20px;}
+.table-box-wrap .table-box table tr {display:inline-table; width:100%; table-layout:fixed;}
+.table-box-wrap .table-box table tbody tr {display:table-row; background:#FFF;}
+.table-box-wrap .table-box table tbody tr td {text-align:center; height:40px; border:1px solid #E5E5E5; border-width:0 0 1px 1px; padding:0 20px;}
+.table-box-wrap .table-box table thead tr th:first-child, .table-box-wrap .table-box table td:first-child {border-left-width:0;}
+.table-box-wrap .table-box table tbody tr:last-child td {border-bottom-width:0;}
+.table-box-wrap .table-box table tbody tr td.t-left {text-align:left;}
+.table-box-wrap .table-box table tbody tr:hover {background:#EFF9FF;}
+
+.inputarea {position:relative; width:100%; height:40px; display:inline-block; margin:0; box-sizing:border-box;}
+
+/* Global CSS */
+fieldset {border:none; margin:0; padding:0;}
+*, *::before, *::after {box-sizing:border-box;}
+
+/* input */
+input[type="text"], input[type="password"] {border:1px solid #ccc; color:#000; background-color:#fff; width:100%; height:40px; padding:.5em 2em .5em .8em; box-sizing:border-box; border-radius:.3em; font-weight:600; line-height:1.3;}
+input[type="text"]:focus, input[type="password"]:focus {border:1px solid #000;}
+input[type="text"]:disabled, input[type="password"]:disabled {background-color:#ddd; font-weight:600; opacity:0.7; cursor:not-allowed;}
+input[type="text"]::placeholder, input[type="password"]::placeholder {color:#999; font-weight:400; line-height:1.3;}
+input[type="text"].t-input {border:0; padding:0; margin:5px 0 0 0; color:#000; background:0 0; width:100%; height:22px; box-sizing:border-box; font-size:16px; font-weight:600; line-height:1;}
+input[type="text"].t-input:disabled {color:#999; font-weight:600; opacity:1; cursor:not-allowed;}
+input[type="text"].t-input::placeholder {color:#999; font-weight:400;}
+input[type="text"].t-input35 {display:inline-block; float:left; border:0; padding:0; margin:5px 15px 0 0; color:#000; background:0 0; width:35%; height:22px; box-sizing:border-box; font-size:16px; font-weight:600; line-height:1;}
+input[type="text"].t-input60 {display:inline-block; float:left; border:0; padding:0; margin:5px 0 0 0; color:#000; background:0 0; width:60%; height:22px; box-sizing:border-box; font-size:16px; font-weight:600; line-height:1;}
+input[type="date"] {position:relative; border:1px solid #ccc; color:#000; background-color:#fff; width:160px; height:40px; padding:.4em .5em .4em .8em; box-sizing:border-box; border-radius:.3em; font-weight:600; line-height:1.3;}
+input[type="date"]::-webkit-clear-button, input[type="date"]::-webkit-inner-spin-button {display:none;}
+input[type="date"]::-webkit-calendar-picker-indicator {cursor:pointer;}
+input[type="date"]::before {content:attr(data-placeholder); width:100%;}
+input[type="date"]:valid::before {display:none;}
+input[data-placeholder]::before {color:#999; font-weight:400; line-height:1.3;}
+
+/* select */
+select {-moz-appearance:none; -webkit-appearance:none; appearance:none; color:#000; padding:.4em 2em .4em .8em; border:1px solid #ccc; border-radius:.3em; box-sizing:border-box; font-weight:400; line-height:1.3; height:40px; background:#fff url(../images/ico/select-arrow.png) no-repeat right 10px center / 12px auto;}
+select:focus {border-color:#000; outline:none;}
+select:disabled {background-color:#ddd; opacity:0.7; cursor:not-allowed;}
+select::-ms-expand {display:none;}
+select.corplist {-moz-appearance:none; -webkit-appearance:none; appearance:none; color:#000; padding:.3em 2em .3em .6em; border:1px solid #fff; border-radius:.2em; box-sizing:border-box; font-weight:400; line-height:1.3; width:100%; height:35px; background:#fff url(../images/ico/select-arrow.png) no-repeat right 8px center / 12px auto;}
+select.corplist:focus {border-color:#000; outline:none;}
+select.corplist:disabled {background-color:#ddd; opacity:0.7; cursor:not-allowed;}
+select.corplist::-ms-expand {display:none;}
+
+/* login */
+#loginwrap {width:100%; height:100vh; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center;}
+.logincont {width:500px; height:380px; padding:60px 30px; background-color:#Ffff; text-align:center; border-radius:1em; box-sizing:border-box; box-shadow:0px 0px 10px rgba(0, 0, 0, 0.2);}
+.logintit {font-family:'Infinity Sans Cond'; font-size:30px; font-weight:600; padding-bottom:10px;}
+.loginarea {position:relative; width:100%; height:40px; display:block; margin:20px 0;}
+
+/* transfer */
+.transfer-wrap {margin:0 auto; width:700px;}
+.transfer-box {width:100%; padding:10px 0;}
+.t-line {height:1px; background:#999; margin:8px 0 20px 0;}
+.t-warp {position:relative; width:100%;}
+.t-box {width:100%; height:70px; margin:20px 0; padding:.5em 1.5em; box-sizing:border-box; border-radius:.3em; border:1px solid #bbb;}
+.t-disable {background-color:#eee; border:1px solid #e4e4e4;}
+.placeholder-tit {color:#aaa; font-size:14px; display:block;}
