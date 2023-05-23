@@ -16,7 +16,7 @@ spring.devtools.livereload.enabled: true
 # ----------------------------------------
 
 # EMBEDDED SERVER
-server.port: 8080
+server.port: 8081
 
 # ----------------------------------------
 # WINTER PROPERTIES
